@@ -37,7 +37,8 @@
 
                 infoWindow = new google.maps.InfoWindow;
                 marker = new google.maps.Marker({
-                        map: map
+                        map: map,
+                        animation: google.maps.Animation.DROP
                     });
 
                 getMarkers();
@@ -104,22 +105,30 @@
                 const response = await fetch('/api/query_entity');
                 const data = await response.json();
                 var labels = ['❕', '💪'];
-                console.log(data);
 
                 Array.prototype.forEach.call(data.result, function(element) {
                     console.log(element)
                     var title = element.have ? 'HAVE' : 'NEED';
                     var type = element.have ? 1 : 0;
                     var infoWindow = new google.maps.InfoWindow;
-                    var infowincontent = document.createElement('div');
-                    var strong = document.createElement('strong');
-                    strong.textContent = `${element.first_name} ${title} ${element.stuff}`;
-                    infowincontent.appendChild(strong);
-                    infowincontent.appendChild(document.createElement('br'));
 
-                    var text = document.createElement('text');
-                    text.textContent = `amount: ${element.amount}`;
-                    infowincontent.appendChild(text);
+                    infowincontent = 
+                        `<div>
+                            <strong>${element.first_name} ${title} ${element.stuff}</strong>
+                            <br>
+                            <text>amount: ${element.amount}</text>
+
+                            <form action="/api/update_entity" method="post">
+                                <input type="hidden" name="id" value=${element.id}>
+                                <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-sm">🔑</span>
+                                    </div>
+                                    <input type="password" class="form-control" name="password" placeholder="Password">
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm">Done</button>
+                            </form>
+                        </div>`
 
                     var marker = new google.maps.Marker({
                         position: {lat: parseFloat(element.latitude), lng: parseFloat(element.longitude)},
