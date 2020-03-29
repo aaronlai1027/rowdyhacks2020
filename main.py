@@ -13,7 +13,9 @@
 # limitations under the License.
 
 # [START gae_python37_app]
-from flask import Flask
+from flask import Flask, render_template
+from dotenv import load_dotenv
+from os import getenv
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -24,7 +26,8 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hello World!'
+    GOOGLE_MAP_API_KEY = getenv('GOOGLE_MAP_API_KEY')
+    return render_template('main.html', key=GOOGLE_MAP_API_KEY)
 
 
 if __name__ == '__main__':
