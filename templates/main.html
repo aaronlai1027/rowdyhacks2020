@@ -75,17 +75,17 @@
 
                 Array.prototype.forEach.call(data.result, function(element) {
                     console.log(element)
-                    var title = element.have ? 'Have' : 'Need';
+                    var title = element.have ? 'HAVE' : 'NEED';
                     var type = element.have ? 1 : 0;
                     var infoWindow = new google.maps.InfoWindow;
                     var infowincontent = document.createElement('div');
                     var strong = document.createElement('strong');
-                    strong.textContent = `${title} ${element.first_name} ${element.last_name}`;
+                    strong.textContent = `${element.first_name} ${title} ${element.stuff}`;
                     infowincontent.appendChild(strong);
                     infowincontent.appendChild(document.createElement('br'));
 
                     var text = document.createElement('text');
-                    text.textContent = `${element.stuff}: ${element.amount}`;
+                    text.textContent = `amount: ${element.amount}`;
                     infowincontent.appendChild(text);
 
                     var marker = new google.maps.Marker({
