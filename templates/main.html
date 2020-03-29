@@ -39,7 +39,8 @@
                         map: map
                     });
 
-                addMarker();
+                // addMarker();
+                getMarkers();
             }
 
             function placeMarkerAndPanTo(latLng, map) {
@@ -66,6 +67,46 @@
                 marker.setPosition(latLng);
                 infoWindow.setContent(content);
                 infoWindow.open(map, marker);
+            }
+
+            const getMarkers = async () => {
+                const response = await fetch('/api/query_entity');
+                const data = await response.json();
+                var labels = ['❕', '💪'];
+                console.log(data);
+
+                Array.prototype.forEach.call(data.result, function(element) {
+                    console.log(element)
+                    var title = element.have ? 'Have' : 'Need';
+                    var type = element.have ? 1 : 0;
+                    var infoWindow = new google.maps.InfoWindow;
+                    var infowincontent = document.createElement('div');
+                    var strong = document.createElement('strong');
+                    strong.textContent = `${title} ${element.first_name} ${element.last_name}`;
+                    infowincontent.appendChild(strong);
+                    infowincontent.appendChild(document.createElement('br'));
+
+                    var text = document.createElement('text');
+                    text.textContent = `${element.stuff}: ${element.amount}`;
+                    infowincontent.appendChild(text);
+
+                    var marker = new google.maps.Marker({
+                        position: {lat: parseFloat(element.latitude), lng: parseFloat(element.longitude)},
+                        animation: google.maps.Animation.DROP,
+                        map: map,
+                        label: {
+                                text: labels[type],
+                                fontSize: '20px'
+                        }
+                    });
+                    marker.addListener('click', function() {
+                        infoWindow.setContent(infowincontent);
+                        infoWindow.open(map, marker);
+                    });
+
+                    infoWindow.setContent(infowincontent);
+                    infoWindow.open(map, marker);
+                });
             }
 
             async function addMarker() {
