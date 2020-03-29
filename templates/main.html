@@ -108,16 +108,40 @@
 
                 Array.prototype.forEach.call(data.result, function(element) {
                     console.log(element)
-                    var title = element.have ? 'HAVE' : 'NEED';
+                    var title = element.have ? '💪 HAVE' : '❗ NEED';
                     var type = element.have ? 1 : 0;
                     var infoWindow = new google.maps.InfoWindow;
 
                     infowincontent = 
                         `<div>
-                            <strong>${element.first_name} ${title} ${element.stuff}</strong>
-                            <br>
-                            <text>amount: ${element.amount}</text>
+                            <center><strong>${title} ${element.stuff}</strong></center>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td>😃</td>
+                                        <td>${element.first_name || ''} ${element.last_name || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>☎️</td>
+                                        <td>${element.phone || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>✉️</td>
+                                        <td>${element.email || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>📦</td>
+                                        <td>${element.stuff || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>🔢</td>
+                                        <td>${element.amount || '0'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
+                        <div>
                             <form action="/api/update_entity" method="post">
                                 <input type="hidden" name="id" value=${element.id}>
                                 <div class="input-group input-group-sm mb-2">
