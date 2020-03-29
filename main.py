@@ -14,7 +14,7 @@
 
 # [START gae_python37_app]
 from google.cloud import datastore
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 from dotenv import load_dotenv
 from os import getenv, environ
 
@@ -33,6 +33,8 @@ def hello():
 
 @app.route('/api/add_entity',methods=["POST"])
 def api_add_entity():
+
+
     add_entity(
         request.form["first_name"],
         request.form["last_name"],
@@ -42,7 +44,8 @@ def api_add_entity():
         request.form["amount"],
         request.form["have"]
         )
-    return "Add Entity"
+    print(request.form["have"])
+    return redirect(url_for('hello'))
 
 @app.route('/api/query_entity')
 def api_query_entity():
@@ -56,11 +59,11 @@ def add_entity(first_name = "",last_name = "",latitude = 0.0,longitude = 0.0,stu
     task.update({
         "first_name": first_name,
         "last_name": last_name,
-        "latitude": latitude,
-        "longitude": longitude,
+        "latitude": float(latitude),
+        "longitude": float(longitude),
         "stuff": stuff,
-        "amount": amount,
-        "have": have,
+        "amount": int(amount),
+        "have": bool(int(have)),
         "done": False
     })
     datastore_client.put(task)
