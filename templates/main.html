@@ -17,6 +17,7 @@
                 padding: 0;
             }
         </style>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
         <div id="map"></div>
@@ -39,28 +40,60 @@
                         map: map
                     });
 
-                // addMarker();
                 getMarkers();
             }
 
             function placeMarkerAndPanTo(latLng, map) {
                 var content = 
                     `<form action="/api/add_entity" method="post">
-                        <label>First Name</label><br>
-                        <input type="text" name="first_name"><br>
-                        <label>Last Name</label><br>
-                        <input type="text" name="last_name"><br>
                         <input type="hidden" name="latitude" value = ${latLng.lat()}>
                         <input type="hidden" name="longitude" value=${latLng.lng()}>
-                        <label>Stuff</label><br>
-                        <input type="text" name="stuff"><br>
-                        <label>Amount</label><br>
-                        <input type="number" name="amount"><br>
-                        <label>Need</label>
-                        <input type="radio" name="have" value="0">
-                        <label>Have</label>
-                        <input type="radio" name="have" value="1"><br><br>
-                        <input type="submit" value="Submit">
+                        <div class="input-group input-group-sm mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">😃</span>
+                            </div>
+                            <input type="text" class="form-control" name="first_name" placeholder="First Name">
+                            <input type="text" class="form-control" name="last_name" placeholder="Last Name">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">☎️</span>
+                            </div>
+                            <input type="tel" name="phone" class="form-control" pattern="[0-9]{3}-*[0-9]{3}-*[0-9]{4}" placeholder="Phone">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">✉️</span>
+                            </div>
+                            <input type="email" class="form-control" name="email" placeholder="Email">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">📦</span>
+                            </div>
+                            <input type="text" class="form-control" name="stuff" placeholder="Stuff">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">🔢</span>
+                            </div>
+                            <input type="number" class="form-control" name="amount" placeholder="Amount">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">🔑</span>
+                            </div>
+                            <input type="password" class="form-control" name="password" placeholder="Password">
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline mb-2">
+                            <input type="radio"class="custom-control-input" id="need" name="have" value="0">
+                            <label class="custom-control-label" for="need"><strong>❗ NEED</strong></label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline mb-2">
+                            <input type="radio"class="custom-control-input" id="have" name="have" value="1">
+                            <label class="custom-control-label" for="have"><strong>💪 HAVE</strong></label>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Submit</button>
                     </form>`
                 marker.setPosition(latLng);
                 infoWindow.setContent(content);
@@ -106,65 +139,8 @@
                     infoWindow.open(map, marker);
                 });
             }
-
-            async function addMarker() {
-                var numMarkers = 0;
-                var labels = ['❕', '💪'];
-                var contents = ['Need 😷', 'Have 😷'];
-                var names = ['Tai-Ying Chen', 'Donald Trumph']
-
-
-                types = []
-                for (var i = 0; i < 10; i++) {
-                    var type = Math.round(Math.random());
-                    types.push(type);
-                }
-
-                Array.prototype.forEach.call(types, function(type) {
-                    var infoWindow = new google.maps.InfoWindow;
-                    var infowincontent = document.createElement('div');
-                    var strong = document.createElement('strong');
-                    strong.textContent = names[type];
-                    infowincontent.appendChild(strong);
-                    infowincontent.appendChild(document.createElement('br'));
-
-                    var text = document.createElement('text');
-                    text.textContent = contents[type];
-                    infowincontent.appendChild(text);
-
-                    var marker = new google.maps.Marker({
-                        position: {lat: 40.717333 + (Math.random()-0.5)/5, lng: -74.004814 + (Math.random()-0.5)/5},
-                        animation: google.maps.Animation.DROP,
-                        map: map,
-                        label: {
-                                text: labels[type],
-                                fontSize: '20px'
-                        }
-                    });
-                    marker.addListener('click', function() {
-                        infoWindow.setContent(infowincontent);
-                        infoWindow.open(map, marker);
-                    });
-
-                    infoWindow.setContent(infowincontent);
-                    infoWindow.open(map, marker);
-                });
-            }
-
-            function sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
         </script>
         <script src="https://maps.googleapis.com/maps/api/js?key={{key}}&callback=initMap"
         async defer></script>
-        <!-- The core Firebase JS SDK is always required and must be listed first -->
-        <!-- <script src="/__/firebase/7.13.1/firebase-app.js"></script> -->
-
-        <!-- TODO: Add SDKs for Firebase products that you want to use
-                https://firebase.google.com/docs/web/setup#available-libraries -->
-        <!-- <script src="/__/firebase/7.13.1/firebase-analytics.js"></script> -->
-
-        <!-- Initialize Firebase -->
-        <!-- <script src="/__/firebase/init.js"></script> -->
     </body>
 </html>
