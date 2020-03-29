@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # [START gae_python37_app]
+from google.cloud import datastore
 from flask import Flask, render_template
 from dotenv import load_dotenv
 from os import getenv
@@ -28,6 +29,53 @@ def hello():
     """Return a friendly HTTP greeting."""
     GOOGLE_MAP_API_KEY = getenv('GOOGLE_MAP_API_KEY')
     return render_template('main.html', key=GOOGLE_MAP_API_KEY)
+
+@app.route('/api/add_entity')
+def api_add_entity():
+    add_entity("may",'shih',20,24,'money',1000)
+    return "Add Entity"
+
+@app.route('/api/query_entity')
+def api_query_entity():
+    return query_entity()
+
+
+
+def add_entity(first_name,last_name,latitude,longitude,stuff,amount):
+    datastore_client = datastore.Client()
+    task_key = datastore_client.key('user')
+    task = datastore.Entity(key=task_key)
+    task.update({
+        'first_name': first_name,
+        'last_name': last_name,
+        'latitude': latitude,
+        'longitude': longitude,
+        'stuff': stuff,
+        'amount': amount,
+        'done': False
+    })
+    datastore_client.put(task)
+    print('Saved {}'.format(task.key.id))
+
+
+def query_entity():
+    datastore_client = datastore.Client()
+    query = datastore_client.query(kind='user')
+    # query.add_filter('done', '=', False)
+    results = list(query.fetch())
+    for i in range(len(results)):
+        results[i]["id"]=results[i].id
+    res = {"result": results}
+
+    return res
+
+
+
+#  def delete_entity(kind,name):
+#      key = datastore_client.key(kind, name)
+#      datastore_client.delete(key)
+
+
 
 
 if __name__ == '__main__':
