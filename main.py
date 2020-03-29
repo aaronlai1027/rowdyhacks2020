@@ -31,18 +31,16 @@ def hello():
     GOOGLE_MAP_API_KEY = getenv('GOOGLE_MAP_API_KEY') or environ('GOOGLE_MAP_API_KEY')
     return render_template('main.html', key=GOOGLE_MAP_API_KEY)
 
-@app.route("/api/add_entity",methods=["POST", "GET"])
+@app.route('/api/add_entity',methods=["POST"])
 def api_add_entity():
-    data = request.get_json()
     add_entity(
-        data["first_name"],
-        data["last_name"],
-        data["latitude"],
-        data["longitude"],
-        data["stuff"],
-        data["amount"],
-        data["have"],
-        data["done"]
+        request.form["first_name"],
+        request.form["last_name"],
+        request.form["latitude"],
+        request.form["longitude"],
+        request.form["stuff"],
+        request.form["amount"],
+        request.form["have"]
         )
     return "Add Entity"
 
