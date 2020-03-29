@@ -14,9 +14,10 @@
 
 # [START gae_python37_app]
 from google.cloud import datastore
-from flask import Flask, render_template
+from flask import Flask, request, render_template
 from dotenv import load_dotenv
-from os import getenv
+from os import getenv, environ
+
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -27,12 +28,22 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    GOOGLE_MAP_API_KEY = getenv('GOOGLE_MAP_API_KEY')
+    GOOGLE_MAP_API_KEY = getenv('GOOGLE_MAP_API_KEY') or environ('GOOGLE_MAP_API_KEY')
     return render_template('main.html', key=GOOGLE_MAP_API_KEY)
 
-@app.route('/api/add_entity')
+@app.route("/api/add_entity",methods=["POST", "GET"])
 def api_add_entity():
-    add_entity("may",'shih',20,24,'money',1000)
+    data = request.get_json()
+    add_entity(
+        data["first_name"],
+        data["last_name"],
+        data["latitude"],
+        data["longitude"],
+        data["stuff"],
+        data["amount"],
+        data["have"],
+        data["done"]
+        )
     return "Add Entity"
 
 @app.route('/api/query_entity')
@@ -40,33 +51,32 @@ def api_query_entity():
     return query_entity()
 
 
-
-def add_entity(first_name,last_name,latitude,longitude,stuff,amount):
+def add_entity(first_name = "",last_name = "",latitude = 0.0,longitude = 0.0,stuff = "",amount = 0, have = True):
     datastore_client = datastore.Client()
-    task_key = datastore_client.key('user')
+    task_key = datastore_client.key("user")
     task = datastore.Entity(key=task_key)
     task.update({
-        'first_name': first_name,
-        'last_name': last_name,
-        'latitude': latitude,
-        'longitude': longitude,
-        'stuff': stuff,
-        'amount': amount,
-        'done': False
+        "first_name": first_name,
+        "last_name": last_name,
+        "latitude": latitude,
+        "longitude": longitude,
+        "stuff": stuff,
+        "amount": amount,
+        "have": have,
+        "done": False
     })
     datastore_client.put(task)
-    print('Saved {}'.format(task.key.id))
+    # print('Saved {}'.format(task.key.id))
 
 
 def query_entity():
     datastore_client = datastore.Client()
-    query = datastore_client.query(kind='user')
-    # query.add_filter('done', '=', False)
+    query = datastore_client.query(kind="user")
+    # query.add_filter("done", ""="", False)
     results = list(query.fetch())
     for i in range(len(results)):
         results[i]["id"]=results[i].id
     res = {"result": results}
-
     return res
 
 
