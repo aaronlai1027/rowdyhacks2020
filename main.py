@@ -33,26 +33,31 @@ def hello():
 
 @app.route('/api/add_entity',methods=["POST"])
 def api_add_entity():
-
-
     add_entity(
         request.form["first_name"],
         request.form["last_name"],
         request.form["latitude"],
         request.form["longitude"],
+        request.form["password"],
+        request.form["phone"],
+        request.form["email"],
         request.form["stuff"],
         request.form["amount"],
         request.form["have"]
         )
-    print(request.form["have"])
     return redirect(url_for('hello'))
 
 @app.route('/api/query_entity')
 def api_query_entity():
     return query_entity()
 
+@app.route('/api/update_entity',methods=["POST"])
+def api_update_entity():
+    update_entity(request.form["id"], request.form["password"])
+    return redirect(url_for('hello'))
 
-def add_entity(first_name = "",last_name = "",latitude = 0.0,longitude = 0.0,stuff = "",amount = 0, have = True):
+
+def add_entity(first_name = "",last_name = "",latitude = 0.0,longitude = 0.0,password="",phone = "",email="",stuff = "",amount = 0, have = True):
     datastore_client = datastore.Client()
     task_key = datastore_client.key("user")
     task = datastore.Entity(key=task_key)
@@ -61,25 +66,45 @@ def add_entity(first_name = "",last_name = "",latitude = 0.0,longitude = 0.0,stu
         "last_name": last_name,
         "latitude": float(latitude),
         "longitude": float(longitude),
+        "password": password,
+        "phone": phone,
+        "email": email,
         "stuff": stuff,
         "amount": int(amount),
         "have": bool(int(have)),
-        "done": False
+        "done": False,
     })
     datastore_client.put(task)
-    # print('Saved {}'.format(task.key.id))
+
 
 
 def query_entity():
     datastore_client = datastore.Client()
     query = datastore_client.query(kind="user")
-    # query.add_filter("done", ""="", False)
+    query.add_filter("done", "=", False)
     results = list(query.fetch())
     for i in range(len(results)):
         results[i]["id"]=results[i].id
     res = {"result": results}
     return res
 
+
+
+def update_entity():
+    datastore_client = datastore.Client()
+    query = datastore_client.query(kind="user")
+    results = list(query.fetch())
+
+    with datastore_client.transaction():
+        key = datastore_client.key('user', int(request.form["id"]))
+        task = datastore_client.get(key)
+        if task["password"] == request.form["password"]:
+            task['done'] = True
+            datastore_client.put(task)
+        else:
+            return "incorrect password"
+
+    return task
 
 
 #  def delete_entity(kind,name):
